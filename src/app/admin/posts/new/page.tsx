@@ -4,16 +4,44 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
+import { usePosts } from '@/context/PostContext';
+import { useRouter } from 'next/navigation';
+import { toast } from "sonner";
 
 export default function NewPostPage() {
+  const { addPost } = usePosts();
+  const router = useRouter();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [status, setStatus] = useState<'Draft' | 'Published'>('Draft');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ title, content, status });
-    // Later: POST to backend or local API route
+    
+    if (!title.trim()) {
+      toast.error('Please enter a title for the post');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      addPost({ title: title.trim(), author: 'Oussama', status });
+      toast.success(`Post "${title.trim()}" has been created successfully`);
+      
+      // Clear inputs
+      setTitle('');
+      setContent('');
+      setStatus('Draft');
+      
+      // Redirect to posts page
+      router.push('/admin/posts');
+    } catch (error) {
+      toast.error('Failed to create post. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -24,6 +52,8 @@ export default function NewPostPage() {
           placeholder="Post Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          required
+          className={!title.trim() && title.length > 0 ? "border-red-500" : ""}
         />
         <Textarea
           placeholder="Post Content"
@@ -38,7 +68,9 @@ export default function NewPostPage() {
           <option value="Draft">Draft</option>
           <option value="Published">Published</option>
         </select>
-        <Button type="submit">Create Post</Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Creating...' : 'Create Post'}
+        </Button>
       </form>
     </div>
   );
