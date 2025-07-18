@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 export type Post = {
   id: string;
@@ -20,34 +20,70 @@ type PostContextType = {
 
 const PostContext = createContext<PostContextType | undefined>(undefined);
 
+// Default posts to use when localStorage is empty
+const DEFAULT_POSTS: Post[] = [
+  {
+    id: '1',
+    title: 'Building a Blog with Next.js',
+    author: 'Oussama',
+    date: '2025-07-14',
+    status: 'Published',
+  },
+  {
+    id: '2',
+    title: 'Understanding React Server Components',
+    author: 'Oussama',
+    date: '2025-07-10',
+    status: 'Draft',
+  },
+  {
+    id: '3',
+    title: 'Styling with Tailwind CSS',
+    author: 'Oussama',
+    date: '2025-07-12',
+    status: 'Published',
+  },
+];
+
+// localStorage helper functions
+const STORAGE_KEY = 'blog-cms-posts';
+
+const loadPostsFromStorage = (): Post[] => {
+  if (typeof window === 'undefined') return DEFAULT_POSTS;
+  
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Failed to load posts from localStorage:', error);
+  }
+  
+  return DEFAULT_POSTS;
+};
+
+const savePostsToStorage = (posts: Post[]): void => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+  } catch (error) {
+    console.error('Failed to save posts to localStorage:', error);
+  }
+};
+
 export function PostProvider({ children }: { children: ReactNode }) {
-  const [posts, setPosts] = useState<Post[]>([
-    {
-      id: '1',
-      title: 'Building a Blog with Next.js',
-      author: 'Oussama',
-      date: '2025-07-14',
-      status: 'Published',
-    },
-    {
-      id: '2',
-      title: 'Understanding React Server Components',
-      author: 'Oussama',
-      date: '2025-07-10',
-      status: 'Draft',
-    },
-    {
-      id: '3',
-      title: 'Styling with Tailwind CSS',
-      author: 'Oussama',
-      date: '2025-07-12',
-      status: 'Published',
-    },
-  ]);
+  const [posts, setPosts] = useState<Post[]>(loadPostsFromStorage);
+
+  // Sync posts to localStorage whenever posts change
+  useEffect(() => {
+    savePostsToStorage(posts);
+  }, [posts]);
 
   function addPost(post: Omit<Post, 'id' | 'date'>) {
     const newPost: Post = {
-      id: String(posts.length + 1),
+      id: String(Date.now()), // Use timestamp for unique ID
       date: new Date().toISOString().slice(0, 10),
       ...post,
     };

@@ -2,8 +2,14 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +25,7 @@ import { useState } from "react";
 import { usePosts } from '@/context/PostContext';
 import { useRouter } from 'next/navigation';
 import { toast } from "sonner";
+import { ArrowUpDown } from "lucide-react";
 
 type Post = {
   id: string;
@@ -31,28 +38,73 @@ type Post = {
 export default function PostsPage() {
   const { posts, deletePost } = usePosts();
   const router = useRouter();
-  const [filter, setFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  const filteredPosts = posts.filter((post) =>
-    post.title.toLowerCase().includes(filter.toLowerCase())
-  );
+  const filteredPosts = posts.filter((post) => {
+    const matchesStatus = statusFilter === 'all' || post.status === statusFilter;
+    return matchesStatus;
+  });
 
   const columns: ColumnDef<Post>[] = [
     {
       accessorKey: "title",
-      header: "Title",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="h-8 p-0 hover:bg-transparent"
+          >
+            Title
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      enableSorting: true,
     },
     {
       accessorKey: "author",
       header: "Author",
+      enableSorting: true,
     },
     {
       accessorKey: "date",
-      header: "Date",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="h-8 p-0 hover:bg-transparent"
+          >
+            Date
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const date = new Date(row.getValue("date"));
+        return date.toLocaleDateString();
+      },
     },
     {
       accessorKey: "status",
       header: "Status",
+      enableSorting: true,
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string;
+        return (
+          <span
+            className={`px-2 py-1 rounded-full text-xs font-medium ${
+              status === "Published"
+                ? "bg-green-100 text-green-800"
+                : "bg-yellow-100 text-yellow-800"
+            }`}
+          >
+            {status}
+          </span>
+        );
+      },
     },
     {
       id: "actions",
@@ -116,12 +168,20 @@ export default function PostsPage() {
           Create New Post
         </Button>
       </div>
-      <Input
-        placeholder="Search by title..."
-        value={filter}
-        onChange={(e) => setFilter(e.target.value)}
-        className="max-w-sm"
-      />
+      
+      <div className="flex items-center gap-4">
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="Published">Published</SelectItem>
+            <SelectItem value="Draft">Draft</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
       <DataTable columns={columns} data={filteredPosts} />
     </div>
   );
