@@ -27,7 +27,7 @@ export default function NewPostPage() {
     setIsSubmitting(true);
     
     try {
-      addPost({ title: title.trim(), author: 'Oussama', status });
+      addPost({ title: title.trim(), content: content.trim(), author: 'Oussama', status });
       toast.success(`Post "${title.trim()}" has been created successfully`);
       
       // Clear inputs
@@ -37,7 +37,8 @@ export default function NewPostPage() {
       
       // Redirect to posts page
       router.push('/admin/posts');
-    } catch (error) {
+    } catch (err) {
+      console.error('Failed to create post:', err);
       toast.error('Failed to create post. Please try again.');
     } finally {
       setIsSubmitting(false);

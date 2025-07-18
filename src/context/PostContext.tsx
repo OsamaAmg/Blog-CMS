@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, ReactNode, useEffect } from
 export type Post = {
   id: string;
   title: string;
+  content: string;
   author: string;
   date: string;
   status: 'Published' | 'Draft';
@@ -25,6 +26,7 @@ const DEFAULT_POSTS: Post[] = [
   {
     id: '1',
     title: 'Building a Blog with Next.js',
+    content: 'Next.js is a powerful React framework that makes building modern web applications a breeze. In this post, we\'ll explore the key features that make Next.js stand out, including server-side rendering, static site generation, and the new app router.',
     author: 'Oussama',
     date: '2025-07-14',
     status: 'Published',
@@ -32,6 +34,7 @@ const DEFAULT_POSTS: Post[] = [
   {
     id: '2',
     title: 'Understanding React Server Components',
+    content: 'React Server Components represent a new paradigm in React development. They allow us to render components on the server, reducing the JavaScript bundle size and improving performance. Let\'s dive into how they work and when to use them.',
     author: 'Oussama',
     date: '2025-07-10',
     status: 'Draft',
@@ -39,6 +42,7 @@ const DEFAULT_POSTS: Post[] = [
   {
     id: '3',
     title: 'Styling with Tailwind CSS',
+    content: 'Tailwind CSS has revolutionized how we approach styling in modern web development. With its utility-first approach, we can build beautiful, responsive designs quickly and efficiently. This guide covers the fundamentals and best practices.',
     author: 'Oussama',
     date: '2025-07-12',
     status: 'Published',

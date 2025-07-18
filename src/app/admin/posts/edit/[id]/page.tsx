@@ -24,7 +24,7 @@ export default function EditPostPage() {
     const post = getPost(postId);
     if (post) {
       setTitle(post.title);
-      setContent(''); // We don't have content in our Post type yet
+      setContent(post.content || ''); // Load the content from the post
       setStatus(post.status);
       setLoading(false);
     } else {
@@ -45,10 +45,11 @@ export default function EditPostPage() {
     setIsSubmitting(true);
     
     try {
-      updatePost(postId, { title: title.trim(), author: 'Oussama', status });
+      updatePost(postId, { title: title.trim(), content: content.trim(), author: 'Oussama', status });
       toast.success(`Post "${title.trim()}" has been updated successfully`);
       router.push('/admin/posts');
-    } catch (error) {
+    } catch (err) {
+      console.error('Failed to update post:', err);
       toast.error('Failed to update post. Please try again.');
     } finally {
       setIsSubmitting(false);

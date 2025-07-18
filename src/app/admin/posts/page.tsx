@@ -21,6 +21,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useState } from "react";
 import { usePosts } from '@/context/PostContext';
 import { useRouter } from 'next/navigation';
@@ -30,6 +38,7 @@ import { ArrowUpDown } from "lucide-react";
 type Post = {
   id: string;
   title: string;
+  content: string;
   author: string;
   date: string;
   status: "Published" | "Draft";
@@ -123,6 +132,30 @@ export default function PostsPage() {
 
         return (
           <div className="flex items-center gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="text-purple-600 hover:underline text-sm">
+                  Preview
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-xl font-bold">
+                    {post.title}
+                  </DialogTitle>
+                  <DialogDescription className="text-sm text-gray-600">
+                    By {post.author} on {new Date(post.date).toLocaleDateString()} • {post.status}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="mt-4">
+                  <div className="prose prose-sm max-w-none">
+                    <p className="whitespace-pre-wrap text-gray-700 leading-relaxed">
+                      {post.content}
+                    </p>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
             <button
               onClick={handleEdit}
               className="text-blue-600 hover:underline text-sm"
