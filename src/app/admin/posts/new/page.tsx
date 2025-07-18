@@ -74,5 +74,6 @@ export default function NewPostPage() {
         </Button>
       </form>
     </div>
+    // for git setting //
   );
 }
