@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { usePosts } from '@/context/PostContext';
 import { useComments } from '@/context/CommentContext';
+import { useCategories } from '@/context/CategoryContext';
 import {
   LayoutDashboard,
   FileText,
@@ -56,9 +57,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const { posts } = usePosts();
   const { comments } = useComments();
+  const { categories } = useCategories();
 
   const pendingComments = comments.filter(comment => comment.status === 'pending').length;
   const draftPosts = posts.filter(post => post.status === 'Draft').length;
+  const inactiveCategories = categories.filter(category => category.status === 'inactive').length;
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -111,6 +114,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       {draftPosts}
                     </Badge>
                   )}
+                  {item.label === 'Categories' && inactiveCategories > 0 && (
+                    <Badge variant="outline" className="ml-auto">
+                      {inactiveCategories}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
             );
@@ -119,14 +127,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-200">
-          <div className="grid grid-cols-2 gap-2 mb-3 text-xs text-gray-500">
+          <div className="grid grid-cols-3 gap-2 mb-3 text-xs text-gray-500">
             <div className="text-center">
               <div className="font-semibold text-gray-900">{posts.length}</div>
-              <div>Total Posts</div>
+              <div>Posts</div>
             </div>
             <div className="text-center">
               <div className="font-semibold text-gray-900">{comments.length}</div>
-              <div>Total Comments</div>
+              <div>Comments</div>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-gray-900">{categories.length}</div>
+              <div>Categories</div>
             </div>
           </div>
           <Button 

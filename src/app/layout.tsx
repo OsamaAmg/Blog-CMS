@@ -1,5 +1,6 @@
 import { PostProvider } from '@/context/PostContext';
 import { CommentProvider } from '@/context/CommentContext';
+import { CategoryProvider } from '@/context/CategoryContext';
 import { Toaster } from '@/components/ui/sonner';
 import './globals.css'
 
@@ -9,7 +10,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <PostProvider>
           <CommentProvider>
-            {children}
+            <CategoryProvider>
+              {children}
+            </CategoryProvider>
           </CommentProvider>
         </PostProvider>
         <Toaster />
