@@ -208,7 +208,7 @@ export default function PostsPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Posts</h2>
-        <Button onClick={() => router.push('/admin/posts/new')}>
+        <Button onClick={() => router.push('/admin/editor')}>
           Create New Post
         </Button>
       </div>
